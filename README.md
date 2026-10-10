@@ -28,11 +28,9 @@ Gunakan hanya untuk riset, inventarisasi aset, dan pengujian yang memiliki izin.
 Clone repository, lalu masuk ke folder project:
 
 ```bash
-git clone https://github.com/USERNAME/NAMA-REPOSITORY.git
-cd NAMA-REPOSITORY
+git clone https://github.com/jemtod/KeywordParser.git
+cd KeywordParser
 ```
-
-Ganti URL clone dan nama repository sesuai repository GitHub Anda.
 
 ## Format file keyword
 
