@@ -168,4 +168,4 @@ Batasi region atau gunakan nilai `--max-results` dan `--extra-pages` yang sesuai
 
 ## Lisensi
 
-Tambahkan lisensi pilihan Anda sebelum mempublikasikan repository ini ke GitHub.
+Project ini menggunakan [MIT License](LICENSE).
