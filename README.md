@@ -4,6 +4,10 @@ Script Python untuk mencari URL dari keyword publik melalui Bing dan DuckDuckGo,
 
 Gunakan hanya untuk riset, inventarisasi aset, dan pengujian yang memiliki izin. Script ini tidak melakukan eksploitasi atau akses ke sistem target.
 
+## Contoh proses
+
+![Contoh proses pemindaian](scan-progress.png)
+
 ## Fitur
 
 - Mencari keyword melalui Bing dan DuckDuckGo.
