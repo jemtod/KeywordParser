@@ -150,14 +150,7 @@ File hasil dibuat atau dikosongkan saat proses dimulai, kemudian diperbarui sela
 
 ## Perilaku scan besar
 
-Jika jumlah pekerjaan melebihi 5.000 kombinasi keyword dan region, script mengaktifkan mode startup cepat:
-
-- `max-results` otomatis menjadi `20` jika opsi tersebut tidak diberikan.
-- `extra-pages` dibatasi maksimal `1`.
-- Delay dinonaktifkan.
-- Jumlah worker ditingkatkan untuk memproses antrian awal.
-
-Batasi region atau gunakan nilai `--max-results` dan `--extra-pages` yang sesuai agar beban request tetap terkendali.
+Jika jumlah pekerjaan melebihi 5.000 kombinasi keyword dan region, script menampilkan estimasi jumlah request dan tetap menggunakan nilai `--max-results`, `--extra-pages`, serta `--delay` yang dipilih. Batasi region atau gunakan nilai opsi yang sesuai agar beban request tetap terkendali.
 
 ## Catatan penggunaan
 

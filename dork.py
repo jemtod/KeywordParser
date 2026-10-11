@@ -567,10 +567,6 @@ def main() -> int:
     effective_extra_pages = args.extra_pages
     effective_delay = args.delay
     if total_jobs > 5000:
-        if args.max_results is None:
-            effective_max_results = 20
-        effective_extra_pages = min(args.extra_pages, 1)
-        effective_delay = 0
         estimated_requests = (
             total_jobs
             * 2
@@ -586,10 +582,9 @@ def main() -> int:
             flush=True,
         )
         print(
-            "[*] Mode startup cepat aktif: delay dinonaktifkan dan "
-            f"extra-pages dibatasi menjadi {effective_extra_pages}. "
-            f"max-results menjadi {effective_max_results}. "
-            "Gunakan --regions atau --extra-pages untuk cakupan lebih dalam.",
+            "[*] Parameter scan dipertahankan sesuai konfigurasi. "
+            f"max-results={effective_max_results}, "
+            f"extra-pages={effective_extra_pages}, delay={effective_delay}.",
             flush=True,
         )
     print(
