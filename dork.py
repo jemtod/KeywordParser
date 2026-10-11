@@ -11,7 +11,13 @@ import random
 import socket
 import sys
 import time
-from concurrent.futures import FIRST_COMPLETED, Future, ThreadPoolExecutor, wait
+from concurrent.futures import (
+    FIRST_COMPLETED,
+    Future,
+    ThreadPoolExecutor,
+    as_completed,
+    wait,
+)
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
@@ -402,11 +408,21 @@ def scan_keywords(
                     seen_domains.add(domain)
                     domains.append(domain)
                     new_domains.append(domain)
+            print(
+                f"[{index}/{total_jobs}] {region}/{keyword}: "
+                f"{len(found_urls)} URL, total {len(domains)} domain",
+                flush=True,
+            )
             dns_futures = {
                 domain: dns_executor.submit(resolve_domain_ips, domain, timeout)
                 for domain in new_domains
             }
-            for domain, dns_future in dns_futures.items():
+            future_domains = {
+                dns_future: domain
+                for domain, dns_future in dns_futures.items()
+            }
+            for dns_future in as_completed(future_domains):
+                domain = future_domains[dns_future]
                 for ip in dns_future.result():
                     if ip not in seen_ips:
                         seen_ips.add(ip)
@@ -429,11 +445,6 @@ def scan_keywords(
             if domain_ip_file and new_domain_ip_pairs:
                 with domain_ip_file.open("a", encoding="utf-8") as output_file:
                     output_file.write("\n".join(new_domain_ip_pairs) + "\n")
-            print(
-                f"[{index}/{total_jobs}] {region}/{keyword}: "
-                f"{len(found_urls)} URL, total {len(domains)} domain",
-                flush=True,
-            )
             if found_urls:
                 print(
                     f"    [+] Hasil sementara ditulis: "
