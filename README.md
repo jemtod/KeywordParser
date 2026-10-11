@@ -152,6 +152,8 @@ File hasil dibuat atau dikosongkan saat proses dimulai, kemudian diperbarui sela
 
 Jika jumlah pekerjaan melebihi 5.000 kombinasi keyword dan region, script menampilkan estimasi jumlah request dan tetap menggunakan nilai `--max-results`, `--extra-pages`, serta `--delay` yang dipilih. Batasi region atau gunakan nilai opsi yang sesuai agar beban request tetap terkendali.
 
+Request yang terkena error sementara atau pembatasan server akan dicoba ulang dengan jeda bertahap. Jumlah worker tetap mengikuti opsi `--workers` agar scan besar tidak membebani mesin pencari secara berlebihan.
+
 ## Catatan penggunaan
 
 - Hasil pencarian bergantung pada respons dan struktur halaman mesin pencari.

@@ -21,12 +21,15 @@ from concurrent.futures import (
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
+import urllib.error
 from urllib.request import Request, urlopen
 
 DEFAULT_TIMEOUT = 15
 DEFAULT_MAX_RESULTS = 100
 DEFAULT_EXTRA_PAGES = 10
 DEFAULT_DELAY = 0.2
+REQUEST_RETRIES = 3
+RETRY_BACKOFF = 1.0
 DEFAULT_KEYWORDS_FILE = Path(__file__).with_name("keyword.txt")
 DEFAULT_OUTPUT_DIR = Path(__file__).with_name("scan_results")
 MAX_THREADS = 10
@@ -203,17 +206,26 @@ def search_keyword(
 
         def fetch_page(endpoint: tuple[str, str]) -> tuple[str, str | None]:
             base_url, encoded_parameters = endpoint
-            try:
-                request = Request(
-                    base_url + encoded_parameters,
-                    headers={"User-Agent": USER_AGENT},
-                )
-                with urlopen(request, timeout=timeout) as response:
-                    return base_url, response.read().decode(
-                        "utf-8", errors="replace"
+            for attempt in range(REQUEST_RETRIES):
+                try:
+                    request = Request(
+                        base_url + encoded_parameters,
+                        headers={"User-Agent": USER_AGENT},
                     )
-            except OSError as error:
-                return f"{base_url.split('/')[2]}: {error}", None
+                    with urlopen(request, timeout=timeout) as response:
+                        return base_url, response.read().decode(
+                            "utf-8", errors="replace"
+                        )
+                except urllib.error.HTTPError as error:
+                    if error.code not in {429, 500, 502, 503, 504}:
+                        return f"{base_url.split('/')[2]}: HTTP {error.code}", None
+                    if attempt == REQUEST_RETRIES - 1:
+                        return f"{base_url.split('/')[2]}: HTTP {error.code}", None
+                except OSError as error:
+                    if attempt == REQUEST_RETRIES - 1:
+                        return f"{base_url.split('/')[2]}: {error}", None
+                time.sleep(RETRY_BACKOFF * (attempt + 1))
+            return f"{base_url.split('/')[2]}: request failed", None
 
         with ThreadPoolExecutor(max_workers=len(requests)) as page_executor:
             pages = list(page_executor.map(fetch_page, requests))
@@ -595,7 +607,7 @@ def main() -> int:
     )
     urls, domains = scan_keywords(
         keywords, effective_max_results, args.timeout, effective_delay, args.output,
-        max(args.workers, 20) if total_jobs > 5000 else args.workers,
+        args.workers,
         selected_regions, effective_extra_pages,
     )
     args.output.mkdir(parents=True, exist_ok=True)
