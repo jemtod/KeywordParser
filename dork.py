@@ -607,7 +607,7 @@ def main() -> int:
     )
     urls, domains = scan_keywords(
         keywords, effective_max_results, args.timeout, effective_delay, args.output,
-        args.workers,
+        max(args.workers, 20) if total_jobs > 5000 else args.workers,
         selected_regions, effective_extra_pages,
     )
     args.output.mkdir(parents=True, exist_ok=True)
